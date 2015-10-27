@@ -81,11 +81,16 @@ class Chute
     puts @data
   end
 
+  def to_json
+    @data.collect { |m| m.value }
+  end
+
   # The main queue is also a Chute, there is one of them, not many
   # so this is held as a class level variable
   # It's represented like a double ended queue where items are popped
   # off the front and pushed on the back
   def self.set_main_queue numMarbles
+    @@numMarbles = numMarbles
     # initialize dequeue with N number of marbles
     @@main = Array.new(numMarbles) { |i| Marble.new(i+1) }
   end
@@ -95,11 +100,32 @@ class Chute
   end
 
   def self.pop_marble_off_main_queue
-    @@main.shift
+    result = @@main.shift
+    unless result
+      puts "marble is nil"
+    end
+    result
   end
 
   def self.push_marble_onto_main_queue(marble)
     @@main << marble
+  end
+
+  def self.main_queue_sorted?
+    @@main.each_cons(2).all? { |a,b|
+      a.value < b.value
+    }
+  end
+
+  def self.original_order?
+    if (@@main.count == @@numMarbles) && main_queue_sorted?
+      return true
+    end
+    false
+  end
+
+  def self.to_json
+    @@main.collect { |m| m.value }
   end
 end
 
@@ -108,10 +134,10 @@ end
 class MarbleClock
   attr_accessor :interval
   # param numMarbles- The number of marbles to initialize the clock with
-  def initialize(numMarbles)
+  def initialize(numMarbles, minutes_max = 0)
     # in integer seconds. How often to increment the clock
     @interval = 60
-
+    @max_run_time = minutes_max
     # Let the chute hold the main dequeue as a class level variable to prevent
     # too numerous copying back as we push marbles on an off it.
     Chute.set_main_queue numMarbles
@@ -121,7 +147,7 @@ class MarbleClock
     @hour_chute = Chute.new(11,"one hour")
   end
 
-  def print
+  def print_chutes
     puts "main queue"
     puts Chute.get_main_queue
     @one_chute.print
@@ -135,15 +161,34 @@ class MarbleClock
     puts "#{hours}:#{minutes}"
   end
 
+  def print_days
+    days = @twelve_hours_increments / 2
+    rem  = @twelve_hours_increments % 2
+    hours= rem * 12
+    puts "days: #{days}, hours: #{hours}"
+  end
+
+  def print_json
+    puts "{\"Minutes\": #{@one_chute.to_json}, \"FiveMinutes\": #{@five_chute.to_json}, \"Hours\": #{@hour_chute.to_json}, \"Queue\": #{Chute.to_json}}"
+  end
+
   # Call this to start the clock.
   # It will print out the time every minute.
-  def run
+  def run(find_original_order = false)
+    @twelve_hours_increments = 0 if find_original_order
+    numMinutesTotal = 0 if @max_run_time
     keep_going = true
     while keep_going do
       # pop marble off front of storage queue (dequeue)
       marble = Chute.pop_marble_off_main_queue
       if @interval > 0
         sleep @interval
+      end
+      if @max_run_time
+        numMinutesTotal += 1
+        if numMinutesTotal == @max_run_time
+          break
+        end
       end
       #puts "-------------------------------------------------------"
       #puts "popping marble: #{marble}"
@@ -168,7 +213,12 @@ class MarbleClock
         @five_chute.empty_into_main_queue
         @hour_chute.empty_into_main_queue
         print_time unless @interval == 0
-        keep_going = false
+        @twelve_hours_increments += 1 if find_original_order
+        keep_going = false unless find_original_order
+        if find_original_order && Chute.original_order?
+          # for question 3
+          break
+        end
       end
     end
   end
