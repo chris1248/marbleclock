@@ -1,9 +1,18 @@
 # ------------------------------------------------------------------
 #
-# Marble Clock
+# Marble Ball Clock
 #
 # By Christopher3d@hotmail.com
 # Copyright: October 2015
+#
+# How to use:
+# First instantiate class MarbleClock, passing in the number of
+# marbles to operate it with. The minimum number of marbles needed
+# to run it is 26 by the way.
+# Then call run:
+#
+# clock = MarbleClock.new(26)
+# clock.run
 #
 # ------------------------------------------------------------------
 
