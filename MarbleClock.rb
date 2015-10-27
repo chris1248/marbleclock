@@ -71,7 +71,7 @@ class Chute
   # empties all the items in the chute into a queue
   def empty_into_main_queue
     # puts "  Emptying chute into queue."
-    @@main += @data
+    @@main += @data.reverse
     @data.clear
   end
 
@@ -171,6 +171,3 @@ class MarbleClock
     end
   end
 end
-
-clock = MarbleClock.new(26)
-clock.run
