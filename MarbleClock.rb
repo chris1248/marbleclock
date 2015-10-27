@@ -37,7 +37,7 @@ class Chute
     @description = description
   end
 
-  # tests if it's full and if not Adds a marble to the chute
+  # tests if it's full and if not full, adds a marble to the chute
   # returns false if the array is full, true if the array is NOT full
   def attempt_push(marble)
     # puts "  attempting to push into chute #{@description}. @data.size:#{@data.size}, given size: #{@size}"
@@ -53,10 +53,12 @@ class Chute
     end
   end
 
+  # returns the number of marbles in the chute
   def count
     @data.size
   end
 
+  # returns true if the chute is full, false if the chute is not full.
   def is_full
     result = @data.size >= @size
     # puts "    returning #{result} from is_full"
@@ -70,12 +72,16 @@ class Chute
     @data.clear
   end
 
+  # useful for testing and debugging
   def print
     puts "Chute for #{@description}"
     puts @data
   end
 
-  # The main queue is also a Chute, only there is one of them, not many
+  # The main queue is also a Chute, there is one of them, not many
+  # so this is held as a class level variable
+  # It's represented like a double ended queue where items are popped
+  # off the front and pushed on the back
   def self.set_main_queue numMarbles
     # initialize dequeue with N number of marbles
     @@main = Array.new(numMarbles) { |i| Marble.new(i+1) }
@@ -94,6 +100,8 @@ class Chute
   end
 end
 
+# The marble clock instance itself. The top level class for instantiating
+# and running the clock. Runs for 12 hours only (I had no mandate to make it run longer).
 class MarbleClock
   attr_reader :interval
   # param numMarbles- The number of marbles to initialize the clock with
@@ -124,6 +132,8 @@ class MarbleClock
     puts "#{hours}:#{minutes}"
   end
 
+  # Call this to start the clock.
+  # It will print out the time every minute.
   def run
     keep_going = true
     while keep_going do
