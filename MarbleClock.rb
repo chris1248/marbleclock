@@ -16,6 +16,9 @@
 #
 # ------------------------------------------------------------------
 
+# Represents a marble.
+# It holds an integer variable to identify the marble, so I can see the
+# order of marbles in the different chutes and queues.
 class Marble
   attr_reader :value
   # initialize with an integer value
