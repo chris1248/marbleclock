@@ -106,7 +106,7 @@ end
 # The marble clock instance itself. The top level class for instantiating
 # and running the clock. Runs for 12 hours only (I had no mandate to make it run longer).
 class MarbleClock
-  attr_reader :interval
+  attr_accessor :interval
   # param numMarbles- The number of marbles to initialize the clock with
   def initialize(numMarbles)
     # in integer seconds. How often to increment the clock
@@ -142,21 +142,23 @@ class MarbleClock
     while keep_going do
       # pop marble off front of storage queue (dequeue)
       marble = Chute.pop_marble_off_main_queue
-      sleep @interval
+      if @interval > 0
+        sleep @interval
+      end
       #puts "-------------------------------------------------------"
       #puts "popping marble: #{marble}"
 
       # attempt      to push onto 1 minute chute
       if @one_chute.attempt_push(marble)
-        print_time
+        print_time unless @interval == 0
         next
       # else attempt to push onto 5 minute chute
       elsif @five_chute.attempt_push(marble)
-        print_time
+        print_time unless @interval == 0
         next
       # else attempt to push onto 1 hour   chute
       elsif @hour_chute.attempt_push(marble)
-        print_time
+        print_time unless @interval == 0
         next
       # else falls through to bottom, put into dequeue
       else
@@ -165,7 +167,7 @@ class MarbleClock
         @one_chute.empty_into_main_queue
         @five_chute.empty_into_main_queue
         @hour_chute.empty_into_main_queue
-        print_time
+        print_time unless @interval == 0
         keep_going = false
       end
     end
