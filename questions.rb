@@ -7,7 +7,7 @@ puts "answer = 27"
 puts "----------------------------------------"
 puts "# question 2"
 clock = MarbleClock.new(27)
-clock.interval = 0
+clock.interval = 0 # don't want to wait a real 12 hours for this to run
 clock.run
 clock.print_chutes
 
@@ -44,7 +44,7 @@ clock.print_chutes
 puts "----------------------------------------"
 puts "# question 3"
 clock = MarbleClock.new(27)
-clock.interval = 0
+clock.interval = 0 # don't want to wait a real 12 hours for this to run
 clock.run(find_original_order = true)
 clock.print_days
 
@@ -54,6 +54,6 @@ clock.print_days
 puts "----------------------------------------"
 puts "# question 4"
 clock = MarbleClock.new(27, 193)
-clock.interval = 0
+clock.interval = 0 # don't want to wait a real 12 hours for this to run
 clock.run
 clock.print_json
